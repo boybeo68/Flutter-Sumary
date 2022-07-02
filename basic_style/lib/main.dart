@@ -20,6 +20,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
           primarySwatch: Colors.green,
+          // errorColor: Colors.blue,
           textTheme: ThemeData.light().textTheme.copyWith(
               headline6: TextStyle(
                 fontFamily: 'Yellowtail',
@@ -57,15 +58,23 @@ class _MyHomePageState extends State<MyHomePage> {
     }).toList();
   }
 
-  void _addNewTransaction(String txtTitle, double dbAmount) {
+  void _addNewTransaction(
+      String txtTitle, double dbAmount, DateTime _selectedDate) {
     final newTrans = Transaction(
         id: DateTime.now().toString(),
-        date: DateTime.now(),
+        date: _selectedDate,
         amount: dbAmount,
         title: txtTitle);
     setState(() {
       _userTransaction.add(newTrans);
     });
+  }
+
+  void _deleteTransaction(String id) {
+    setState(() {
+      _userTransaction.removeWhere((element) => element.id == id);
+    });
+    Navigator.of(context).pop();
   }
 
   void _startAddNewTransaction(BuildContext context) {
@@ -106,7 +115,7 @@ class _MyHomePageState extends State<MyHomePage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Chart(historyTransaction),
-            ListTransaction(_userTransaction)
+            ListTransaction(_userTransaction, _deleteTransaction)
           ],
         ),
       ),

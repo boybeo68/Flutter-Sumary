@@ -6,12 +6,13 @@ import 'package:intl/intl.dart';
 
 class ListTransaction extends StatelessWidget {
   final List<Transaction> transactions;
-  ListTransaction(this.transactions);
+  final Function deleteTransaction;
+  ListTransaction(this.transactions, this.deleteTransaction);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 300,
+      height: 450,
       child: transactions.isEmpty
           ? Column(
               children: [
@@ -35,47 +36,43 @@ class ListTransaction extends StatelessWidget {
               itemCount: transactions.length,
               itemBuilder: (ctx, index) {
                 return Card(
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 60,
-                        height: 50,
-                        margin: const EdgeInsets.symmetric(
-                          vertical: 10,
-                          horizontal: 15,
-                        ),
-                        decoration: BoxDecoration(
-                            border: Border.all(
-                          color: Theme.of(context).primaryColor,
-                          width: 2,
-                        )),
-                        child: Center(
-                          child: Text(
-                            '\$${transactions[index].amount.toStringAsFixed(2)}',
-                            style: TextStyle(
-                                color: Theme.of(context).primaryColor,
-                                fontSize: 15,
-                                fontWeight: FontWeight.bold),
-                          ),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      radius: 30,
+                      child: Padding(
+                        padding: EdgeInsets.all(10),
+                        child: FittedBox(
+                          child: Text('\$${transactions[index].amount}'),
                         ),
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            margin: EdgeInsets.symmetric(vertical: 5),
-                            child: Text(
-                              transactions[index].title,
-                              style: Theme.of(context).textTheme.headline5,
-                            ),
-                          ),
-                          Text(
-                            DateFormat.yMEd().format(transactions[index].date),
-                            style: Theme.of(context).textTheme.headline6,
-                          )
-                        ],
-                      )
-                    ],
+                    ),
+                    title: Text(
+                      transactions[index].title,
+                      style: Theme.of(context).textTheme.headline5,
+                    ),
+                    subtitle: Text(
+                        DateFormat.yMEd().format(transactions[index].date)),
+                    trailing: IconButton(
+                      icon: Icon(Icons.delete),
+                      color: Theme.of(context).errorColor,
+                      onPressed: () {
+                        showDialog(
+                            context: context,
+                            builder: (_) {
+                              return AlertDialog(
+                                title: Text("Thông báo"),
+                                content: Text(
+                                    "Bạn có thực sự muốn xoá dữ liệu hay không"),
+                                actions: [
+                                  TextButton(
+                                      onPressed: () => deleteTransaction(
+                                          transactions[index].id),
+                                      child: Text('Ok'))
+                                ],
+                              );
+                            });
+                      },
+                    ),
                   ),
                 );
               },
